@@ -1,0 +1,19 @@
+{% load custom_filters %}
+
+<div class="card mb-2" style="margin-inline-start: {{level|mul:20}}px">
+    <div class="card-body">
+        <h6 class="card-subtitle mb-1 text-muted">
+            {{comment.author.username}} <small class="text-muted">{{comment.create_at|date:"d M Y H:i"}}</small>
+        </h6>
+        <p class="card_text">{{comment.content}}</p>
+         {% if user.is_authenticated %}
+         <button class="btn btn-sm btn-outline-secondary reply-btn" data-comment-id-{{comment.id}}>Ответить</button>
+         {% endif %}
+
+    </div>
+
+</div>
+
+{% for reply_item in replies %}
+    {% include 'app/comment_tree_item.html' with comment-reply_item comment replies=reply_item.replies level=level|add:1  %}
+ {% empty %}
