@@ -74,7 +74,7 @@
         <div class="card mb-2">
             <div class="card-body">
                 <h6 class="card-subtitle mb-1 text-muted">
-                    {{comment.author.username}} <small class="text-muted">{{comment.created_at|date:"d M Y H:i"}}</small>
+                    {{comment.author.username}} <small class="text-muted">{{comment.create_at|date:"d M Y H:i"}}</small>
                 </h6>
                 <p class="card-text">{{comment.content}}</p>
             </div>
@@ -83,6 +83,7 @@
         {% empty %}
         <p class="text-muted">Пока нет комментариев</p>
         {% endfor %}
+
     </section>
 
     {% if user.is_authenticated and post.author == user %}

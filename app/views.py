@@ -56,20 +56,7 @@ def home(request):
     return render(request, 'app/home.html', context)
 
 
-# @login_required
-# def post_detail(request, post_id):
-#     # Получаем конкретный пост по ID или возвращаем 404, если не найден
-#     post = get_object_or_404(Post, id=post_id)
-#
-#     user_liked = False
-#     if request.user.is_authenticated:
-#         user_liked = post.likes.filter(user=request.user).exists()
-#
-#     # Можно передать дополнительные данные, например, комментарии
-#     return render(request, 'app/post_detail.html', {
-#         'post': post,
-#         'user_liked': user_liked,
-#     })
+
 
 @login_required
 def post_detail(request, post_id):
