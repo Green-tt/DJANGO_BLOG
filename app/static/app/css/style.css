@@ -177,3 +177,7 @@ h2 {
     max-width: 450px !important
 }
 
+.form-control.h {
+    height: 170px !important;
+}
+

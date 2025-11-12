@@ -56,34 +56,27 @@
         </footer>
         <!--    Отображения кол-во лайков   -->
     </article>
-
+    <!-- секция комментариев -->
     <section class="mt-4">
         <h3>Коментарии ({{post.comments.count}})</h3>
         <!-- Форма добавления коментария -->
         {% if user.is_authenticated %}
-        <form method="post" action="{% url 'add_comment' post.id %}" class="mb-4">
+        <form method="post" action="{% url 'add_comment' post.id %}" class="mb-4" id="comment-form-top">
             {% csrf_token %}
-            {{comment_form.as_p}}
-            <button type="submit" class="btn-primary">Добавить комментарий</button>
+            {{comment_form.content.label_tag}}
+            {{comment_form.content}}
+            {{comment_form.parent_id}} {#Скрыто#}
+            <button type="submit" class="btn-primary mt-2" >Добавить комментарий</button>
         </form>
         {% else %}
-        <p class="text-muted">Что бы оставить комментарий, <a href="{% url 'login' %}">войдите</a>в систему.</p>
+        <p class="text-muted mt-4">Что бы оставить комментарий, <a href="{% url 'login' %}">войдите</a>в систему.</p>
         {% endif %}
         <!-- Отображения коментариев -->
-        {% for comment in post.comments.all %}
-        <div class="card mb-2">
-            <div class="card-body">
-                <h6 class="card-subtitle mb-1 text-muted">
-                    {{comment.author.username}} <small class="text-muted">{{comment.create_at|date:"d M Y H:i"}}</small>
-                </h6>
-                <p class="card-text">{{comment.content}}</p>
-            </div>
-
-        </div>
+        {% for item in comment_tree %}
+            {% include 'app/comment_tree_item.html' with comment=item.comment replies=item.replies level=0 %}
         {% empty %}
         <p class="text-muted">Пока нет комментариев</p>
         {% endfor %}
-
     </section>
 
     {% if user.is_authenticated and post.author == user %}
@@ -119,4 +112,25 @@
         </div>
     {% endif %}
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const replyButtons = document.querySelectorAll('.reply-btn');
+        const commentForm = document.getElementById('comment-form-top');
+        const contentField  = document.querySelector('textarea[name="content"]');
+        const parentField  = document.querySelector('input[name="parent_id"]');
+
+        replyButtons.forEach(button => {
+            button.addEventListener('click', function(){
+                const commentId = this.getAttribute('data-comment-id')
+                parentField.value = commentId;
+
+                commentForm.scrollIntoView({behavior: 'smooth'})
+                contentField.focus()
+
+                const authorName = this.closest('.card_body').querySelector('h6').innerText.trim().split(' ')[0]
+                contentField.value = `@${authorName}, `;
+            })
+        }
+    })
+</script>
 {% endblock %}
