@@ -20,6 +20,102 @@
         <div class="post-content-body">
             {{ post.content }}
         </div>
+
+        {% if post.image %}
+            <div class="mt-3">
+                <img src="{{post.image.url}}" alt="Изображение к посту" class="img-fluid rounded">
+            </div>
+        {% endif %}
+
+         <!-- Отображения кол-во лайков и кнопки лайк/дизлайк  -->
+        <footer class="mt-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- кол-во лайков -->
+                <div>
+                     <small class="text-muted">
+                         <em>❤️</em>
+                         {{post.get_like_count}} лайк {{post.get_like_count|pluralize}}
+                     </small>
+                </div>
+                <!-- кнопка лайков -->
+                {% if user.is_authenticated and post.author != user %}
+                    <form method="post" action="{% url 'toggle_like' post.id %}">
+                        {% csrf_token %}
+                        {% if post.user_liked %}
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <em>❤️</em>  Отменить лайк
+                            </button>
+                        {% else %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <em>❤️</em>  Like
+                            </button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+        </footer>
+        <!--    Отображения кол-во лайков   -->
     </article>
+
+    <section class="mt-4">
+        <h3>Коментарии ({{post.comments.count}})</h3>
+        <!-- Форма добавления коментария -->
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'add_comment' post.id %}" class="mb-4">
+            {% csrf_token %}
+            {{comment_form.as_p}}
+            <button type="submit" class="btn-primary">Добавить комментарий</button>
+        </form>
+        {% else %}
+        <p class="text-muted">Что бы оставить комментарий, <a href="{% url 'login' %}">войдите</a>в систему.</p>
+        {% endif %}
+        <!-- Отображения коментариев -->
+        {% for comment in post.comments.all %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-1 text-muted">
+                    {{comment.author.username}} <small class="text-muted">{{comment.created_at|date:"d M Y H:i"}}</small>
+                </h6>
+                <p class="card-text">{{comment.content}}</p>
+            </div>
+
+        </div>
+        {% empty %}
+        <p class="text-muted">Пока нет комментариев</p>
+        {% endfor %}
+    </section>
+
+    {% if user.is_authenticated and post.author == user %}
+        <div class="mt-3 text-end">
+            <a href="{% url 'post_edit' post.id %}" class="btn btn-primary me-2">Редактировать пост</a>
+            <!-- Кнопка удаления -->
+            <!-- Модальное окно подтверждения (Bootstrap) -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal_header">
+                            <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Вы уверенны, что хотите удалить пост "{{post.title}}"? Это действие необратимо
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <form method="post" action="{% url 'post_delete' post.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Удалить пост
+            </button>
+
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

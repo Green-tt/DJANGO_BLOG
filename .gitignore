@@ -35,6 +35,7 @@ env/
 ENV/
 config.py
 dj/
+my/
 
 # IDEs
 .vscode/

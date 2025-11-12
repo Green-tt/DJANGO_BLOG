@@ -4,24 +4,19 @@
 <div class="d-flex"> <!-- Flex container для боковой панели и основного контента -->
 
     <!-- Боковая панель -->
-    <aside id="sidebar" class="bg-dark text-white flex-shrink-0">
+    <aside id="sidebar" class="bg-dark text-white flex-shrink-0 position-sticky" style="top: 0">
         <div class="sidebar-content p-3">
             <div class="sidebar-header mb-3">
                 <h5 class="text-white">Меню Блога</h5>
             </div>
             <ul class="nav flex-column">
-                <!-- Пример элементов навигации -->
-                <!--
+                {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link text-light" href="#"><i class="fas fa-home"></i> Домой</a>
+                    <a class="nav-link text-light" href="{% url 'post_create' %}">
+                        Добавить пост
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" href="#">Мои посты</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" href="#">Категории</a>
-                </li>
-                -->
+                {% endif %}
             </ul>
         </div>
     </aside>
@@ -38,10 +33,20 @@
                 {% for post in posts %}
                 <div class="col-md-6 col-lg-4 mb-4">
                     <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-reset">
-                        <div class="post-card p-3 h-100">
+                        <div class="post-card p-3 h-100 position-relative">
                             <h3 class="post-title">{{ post.title }}</h3>
                             <p class="post-meta"><strong>Автор:</strong> {{ post.author.username }}</p>
                             <p class="post-content">{{ post.content|truncatechars:150 }}</p>
+                            <!-- Отображения кол-во лайков в левом нижнем углу  -->
+                            <div class="position-absolute bottom-0 start-0 mb-2 ms-2">
+                                {% if post.get_like_count %}
+                                <small class="text-muted">
+                                    <em>❤️</em>
+                                    {{post.get_like_count}}
+                                </small>
+                                {% endif %}
+                            </div>
+                            <!--    Отображения кол-во лайков в левом нижнем углу  -->
                         </div>
                     </a>
                 </div>
