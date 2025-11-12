@@ -78,10 +78,10 @@ def post_detail(request, post_id):
 
     user_liked = False
     if request.user.is_authenticated:
-        user_liked = post.likes.filter(user=request.user).exists()
+        post.user_liked = post.likes.filter(user=request.user).exists()
 
 
-    comment_form = CommentForm
+    comment_form = CommentForm()
 
     # Можно передать дополнительные данные, например, комментарии
     return render(request, 'app/post_detail.html', {
