@@ -1,0 +1,13 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Редактировать профиль</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        <a href="{% url 'profile_view' user.username %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

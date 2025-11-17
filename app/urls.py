@@ -12,4 +12,6 @@ urlpatterns = [
     path('post/<int:post_id>/delete', views.post_delete, name='post_delete'),
     path('post/<int:post_id>/like', views.toggle_like, name='toggle_like'),
     path('post/<int:post_id>/comment', views.add_comment, name='add_comment'),
+    path('profile', views.profile_edit, name='profile_edit'),
+    path('profile/<str:username>/', views.profile_view, name='profile_view'),
 ]

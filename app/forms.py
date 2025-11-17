@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Post, Comment
+from .models import Post, Comment, UserProfile
 
 
 class UserRegisterForm(UserCreationForm):
@@ -70,4 +70,32 @@ class CommentForm(forms.ModelForm):
             comment.save()
         return comment
 
+
+class UserProfileForm(forms.ModelForm):
+    username = forms.CharField(max_length=150, required=True)
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['avatar', 'birth_date', 'first_name', 'last_name', 'bio']
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+        if user:
+            self.fields['username'].initial = user.username
+            self.fields['email'].initial = user.username
+
+    def save(self, commit=True):
+        user_profile = super().save(commit=False)
+        user = user_profile.user
+
+        user.username = self.cleaned_data['username']
+        user.email = self.cleaned_data['email']
+
+        if commit:
+            user.save()
+            user_profile.save()
+        return user_profile
 

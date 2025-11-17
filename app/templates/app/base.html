@@ -15,7 +15,25 @@
             <a class="navbar-brand" href="{% url 'home' %}">Мой сайт</a>
             <div class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
-                    <a class="nav-link" href="{% url 'logout' %}"> Выйти ({{user.username}})</a>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if user.profile.avatar %}
+                                <img src="{{user.profile.avatar.url}}" alt="Аватар" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                            {% else %}
+                                <img src="https://99px.ru/sstorage/1/2025/06/image_1050625210756539585.jpg" alt="Аватар" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                            {% endif %}
+                            {{user.username}}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href = "{% url 'profile_view' user.username %}">Мой профиль</a></li>
+                            <li><a class="dropdown-item" href = "{% url 'profile_edit'  %}">Редактировать профиль</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href = "{% url 'logout' %}">Выйти</a></li>
+
+                        </ul>
+
+                    </div>
+                    
                 {% else %}
                     <a class="nav-link" href="{% url 'login' %}">Войти</a>
                     <a class="nav-link" href="{% url 'register' %}">Регистрация</a>

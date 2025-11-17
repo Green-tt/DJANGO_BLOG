@@ -1,0 +1,32 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Профиль: {{profile_user.username}}</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="text-center">
+                {% if profile.avatar %}
+                    <img src="{{profile.avatar.url}}" alt="Аватар {{profile_user.username}}" class="img-fluid rounded-circle mb-3" style="max-width: 200px;">
+                {% else %}
+                    <img src="https://99px.ru/sstorage/1/2025/06/image_1050625210756539585.jpg" alt="Аватар по умолчанию">
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-8">
+            <h4>{{profile.first_name}} {{profile.last_name}}</h4>
+            <p><strong>Имя пользователя: </strong>{{profile_user.username}}</p>
+            <p><strong>Email: </strong>{{profile_user.email}}</p>
+            {% if profile.birth_date %}
+                <p><strong>Дата рождения: </strong>{{profile.birth_date|date:"d M Y"}}</p>
+            {% endif %}
+             {% if profile.bio %}
+                <p><strong>О себе: </strong>{{profile.bio}}</p>
+            {% endif %}
+              {% if profile_user == user %}
+                <a href="{% url 'profile_edit' %}" class="btn btn-primary">Редактировать профиль</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,8 +4,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from .forms import UserRegisterForm, UserLoginForm, PostForm, CommentForm
-from .models import Post, Like, Comment
+from django.contrib.auth.models import User
+from .forms import UserRegisterForm, UserLoginForm, PostForm, CommentForm, UserProfileForm
+from .models import UserProfile, Post, Like, Comment
 
 
 # Create your views here.
@@ -182,6 +183,31 @@ def build_comment_tree(comments):
         else:
             root_comments.append(item)
     return root_comments
+
+
+@login_required
+def profile_view(request, username):
+    user = get_object_or_404(User, username=username)
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    return render(request, 'app/profile_view.html', {'profile_user': user, 'profile': profile})
+
+
+@login_required
+def profile_edit(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Профиль успешно обнавлен")
+            return redirect('profile_view', username=request.user.username)
+
+    else:
+        form = UserProfileForm(instance=profile, user=request.user)
+    return render(request, 'app/profile_edit.html', {"form": form})
+
+
 
 
 
