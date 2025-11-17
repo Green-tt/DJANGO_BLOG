@@ -15,5 +15,5 @@
 </div>
 
 {% for reply_item in replies %}
-    {% include 'app/comment_tree_item.html' with comment-reply_item comment replies=reply_item.replies level=level|add:1  %}
- {% empty %}
+    {% include 'app/comment_tree_item.html' with comment=reply_item.comment replies=reply_item.replies level=level|add:1  %}
+ {% endfor %}

@@ -67,8 +67,23 @@ class Comment(models.Model):
         return f"Comment by {self.author.username} on {self.post.title}"
 
     class Meta:
-        verbose_name = "Comment"
+        verbose_name = 'Comment'
         verbose_name_plural = 'Comments'
+
+
+class CommentLike(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comment_likes')
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='comment_likes')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'comment')
+        verbose_name = 'CommentLike'
+        verbose_name_plural = 'CommentLikes'
+
+    def __str__(self):
+        return f"{self.user.username} liked comment on {self.comment.post.title}"
+
 
 
 
