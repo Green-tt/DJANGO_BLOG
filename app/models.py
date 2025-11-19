@@ -111,6 +111,21 @@ class UserProfile(models.Model):
         verbose_name_plural = 'UserProfiles'
 
 
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorite_posts")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="favorite_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'post')
+        verbose_name = 'Favorite'
+        verbose_name_plural = 'Favorites'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username}`favorite {self.post.title}"
+
+
 
 
 

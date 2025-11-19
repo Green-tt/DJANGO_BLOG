@@ -10,10 +10,20 @@
                 <h5 class="text-white">Меню Блога</h5>
             </div>
             <ul class="nav flex-column">
+                <!-- обавить пост -->
                 {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link text-light" href="{% url 'post_create' %}">
                         Добавить пост
+                    </a>
+                </li>
+                {% endif %}
+
+
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link text-light" href="{% url 'my_posts' %}">
+                        Мои посты
                     </a>
                 </li>
                 {% endif %}
@@ -35,8 +45,16 @@
                     <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-reset">
                         <div class="post-card p-3 h-100 position-relative">
                             <h3 class="post-title">{{ post.title }}</h3>
-                            <p class="post-meta"><strong>Автор:</strong> {{ post.author.username }}</p>
-                            <p class="post-content">{{ post.content|truncatechars:150 }}</p>
+                            <!-- Аватар автора-->
+                             <div class="d-flex align-items-center mb-2">
+                                {% if post.author.profile.avatar %}
+                                    <img src="{{ post.author.profile.avatar.url }}" alt="Аватар {{post.author.username}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                {% else %}
+                                    <img src="https://99px.ru/sstorage/1/2025/06/image_1050625210756539585.jpg" alt="Аватар {{post.author.username}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                {% endif %}
+                                <p class="post-content">{{ post.content|truncatechars:150 }}</p>
+                             </div>
+                             <!-- Аватар автора-->
                             <!-- Отображения кол-во лайков в левом нижнем углу  -->
                             <div class="position-absolute bottom-0 start-0 mb-2 ms-2">
                                 {% if post.get_like_count %}

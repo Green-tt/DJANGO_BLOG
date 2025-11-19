@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .forms import UserRegisterForm, UserLoginForm, PostForm, CommentForm, UserProfileForm
-from .models import UserProfile, Post, Like, Comment
+from .models import UserProfile, Post, Like, Comment, Favorite
 
 
 # Create your views here.
@@ -67,7 +67,7 @@ def post_detail(request, post_id):
     user_liked = False
     if request.user.is_authenticated:
         post.user_liked = post.likes.filter(user=request.user).exists()
-
+    user_favorite = post.favorite_by.filter(user=request.user).exists()
     all_comments = Comment.objects.filter(post=post).select_related("author").prefetch_related("comment_likes").order_by("create_at")
     comment_tree = build_comment_tree(all_comments)
 
@@ -79,6 +79,7 @@ def post_detail(request, post_id):
         'user_liked': user_liked,
         'comment_form': comment_form,
         "comment_tree": comment_tree,
+        'user_favorite ': user_favorite,
     })
 
 
@@ -162,8 +163,8 @@ def add_comment(request, post_id):
             comment.author = request.user
             comment.save()
             messages.success(request, f"Комментарий добавлен")
-            return redirect('post_detail', post_id)  # Исправлено: post_id вместо post_id.id
-    return redirect('post_detail', post_id)  # Исправлено: post_id вместо post_id.id
+            return redirect('post_detail', post_id=post.id)  # Исправлено: post_id вместо post_id.id
+    return redirect('post_detail', post_id=post.id)  # Исправлено: post_id вместо post_id.id
 
 
 # Построение дерева коментариев
@@ -208,7 +209,37 @@ def profile_edit(request):
     return render(request, 'app/profile_edit.html', {"form": form})
 
 
+@login_required
+def my_posts(request):
+    posts = Post.objects.filter(author=request.user).select_related('author__profile').select_related('author_profile').prefetch_related('likes','comments')
+    return render(request, 'app/my_posts.html', {'posts': posts})
 
+
+@login_required
+def favorites(request):
+    favorite_entries = Favorite.objects.filter(user=request.user).select_related('post__author__profile').prefeth_related('post__likes', 'post__comments')
+    posts = [entry.post for entry in favorite_entries]
+    return render(request, 'app/favorites.html', {'posts': posts})
+
+
+@login_required
+def toggle_favorite(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if post.author == request.user:
+        messages.error(request, "Нельзя добавить в избранное свой пост")
+        next_url = request.META.get("HTTP_REFERER", reverse('home'))
+        return HttpResponseRedirect(next_url)
+    favorite_obj, created = Favorite.objects.get_or_create(user=request.user, post=post)
+
+    action = "добавлен в избранное"
+    if not created:
+
+
+        favorite_obj.delete()
+        action = "удален из"
+    messages.info(request, f'Пост"{post.title} {action}"')
+    next_url = request.META.get("HTTP_REFERER", reverse('home'))
+    return HttpResponseRedirect(next_url)
 
 
 

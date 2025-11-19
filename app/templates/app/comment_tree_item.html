@@ -1,19 +1,55 @@
 {% load custom_filters %}
 
-<div class="card mb-2" style="margin-inline-start: {{level|mul:20}}px">
+<!--<div class="card mb-2" style="margin-inline-start: {{level|mul:20}}px">-->
+
+<!--    <div class="card-body">-->
+<!--           <h6 class="card-subtitle mb-1 text-muted">-->
+<!--                    {{comment.author.username}} <small class="text-muted">{{comment.create_at|date:"d M Y H:i"}}</small>-->
+<!--                </h6>-->
+<!--        &lt;!&ndash; Аватар автора&ndash;&gt;-->
+
+<!--        <div class="d-flex align-items-center mb-2">-->
+<!--            {% if post.author.profile.avatar %}-->
+<!--            <img src="{{ comment.author.profile.avatar.url }}" alt="Аватар {{post.author.username}}"-->
+<!--                 class="rounded-circle me-2" style="width: 30px; height: 30px;">-->
+<!--            {% else %}-->
+<!--            <img src="https://99px.ru/sstorage/1/2025/06/image_1050625210756539585.jpg"-->
+<!--                 alt="Аватар {{comment.author.username}}"-->
+<!--                 class="rounded-circle me-2" style="width: 30px; height: 30px;">-->
+<!--            {% endif %}-->
+<!--            <div class="flex-grow-1">-->
+<!--                <h6 class="card-subtitle mb-1 text-muted">-->
+<!--                    {{comment.author.username}} <small class="text-muted">{{comment.create_at|date:"d M Y H:i"}}</small>-->
+<!--                </h6>-->
+<!--                <p class="card-text">{{comment.content}}</p>-->
+<!--                {% if user.is_authenticated %}-->
+<!--                <button class="btn btn-sm btn-outline-secondary reply-btn" data-comment-id-{{comment.id}}>Ответить-->
+<!--                </button>-->
+<!--                {% endif %}-->
+<!--            </div>-->
+
+<!--        </div>-->
+
+<!--    </div>-->
+
+<!--</div>-->
+
+{% load custom_filters %}
+
+<div class="card mb-2" style="margin-inline-start: {{ level|mul:20 }}px;">
     <div class="card-body">
         <h6 class="card-subtitle mb-1 text-muted">
-            {{comment.author.username}} <small class="text-muted">{{comment.create_at|date:"d M Y H:i"}}</small>
+            {{ comment.author.username }} <small class="text-muted">{{ comment.created_at|date:"d M Y H:i" }}</small>
         </h6>
-        <p class="card_text">{{comment.content}}</p>
-         {% if user.is_authenticated %}
-         <button class="btn btn-sm btn-outline-secondary reply-btn" data-comment-id-{{comment.id}}>Ответить</button>
-         {% endif %}
-
+        <p class="card-text">{{ comment.content }}</p>
+        {% if user.is_authenticated %}
+        <button class="btn btn-sm btn-outline-secondary reply-btn" data-comment-id="{{ comment.id }}">Ответить</button>
+        {% endif %}
     </div>
-
 </div>
 
+<!-- Рекурсивно отображаем ответы -->
 {% for reply_item in replies %}
-    {% include 'app/comment_tree_item.html' with comment=reply_item.comment replies=reply_item.replies level=level|add:1  %}
- {% endfor %}
+    {% include 'app/comment_tree_item.html' with comment=reply_item.comment replies=reply_item.replies level=level|add:1 %}
+{% endfor %}
+

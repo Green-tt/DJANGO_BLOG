@@ -11,7 +11,19 @@
 
     <article class="post-detail-card p-4 bg-white rounded shadow-sm">
         <header>
+            <!-- Аватар автора-->
             <h1 class="post-title">{{ post.title }}</h1>
+            <div class="d-flex align-items-center mb-2">
+                {% if post.author.profile.avatar %}
+                <img src="{{ post.author.profile.avatar.url }}" alt="Аватар {{post.author.username}}"
+                     class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                {% else %}
+                <img src="https://99px.ru/sstorage/1/2025/06/image_1050625210756539585.jpg"
+                     alt="Аватар {{post.author.username}}"
+                     class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                {% endif %}
+                <p class="post-content">{{ post.content|truncatechars:150 }}</p>
+            </div>
             <p class="post-meta text-muted">
                 Автор: {{ post.author.username }} | Дата: {{ post.created_at|date:"d M Y H:i" }}
             </p>
@@ -22,35 +34,47 @@
         </div>
 
         {% if post.image %}
-            <div class="mt-3">
-                <img src="{{post.image.url}}" alt="Изображение к посту" class="img-fluid rounded">
-            </div>
+        <div class="mt-3">
+            <img src="{{post.image.url}}" alt="Изображение к посту" class="img-fluid rounded">
+        </div>
         {% endif %}
 
-         <!-- Отображения кол-во лайков и кнопки лайк/дизлайк  -->
+        <!-- Отображения кол-во лайков и кнопки лайк/дизлайк  -->
         <footer class="mt-4">
             <div class="d-flex justify-content-between align-items-center">
                 <!-- кол-во лайков -->
                 <div>
-                     <small class="text-muted">
-                         <em>❤️</em>
-                         {{post.get_like_count}} лайк {{post.get_like_count|pluralize}}
-                     </small>
+                    <small class="text-muted">
+                        <em>❤️</em>
+                        {{post.get_like_count}} лайк {{post.get_like_count|pluralize}}
+                    </small>
                 </div>
+                 <form method="post" action="{% url 'toggle_favorite' post.id %}">
+                    {% csrf_token %}
+                    {% if post.user_liked %}
+                    <button type="submit" class="btn btn-sm btn-warning" title="Удалить из избранного">
+                        Удалить из избранного
+                    </button>
+                    {% else %}
+                    <button type="submit" class="btn btn-sm btn-outline-warning" title="Добавить в избранное">
+                        Добавить в избранное
+                    </button>
+                    {% endif %}
+                </form>
                 <!-- кнопка лайков -->
                 {% if user.is_authenticated and post.author != user %}
-                    <form method="post" action="{% url 'toggle_like' post.id %}">
-                        {% csrf_token %}
-                        {% if post.user_liked %}
-                            <button type="submit" class="btn btn-sm btn-danger">
-                                <em>❤️</em>  Отменить лайк
-                            </button>
-                        {% else %}
-                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                <em>❤️</em>  Like
-                            </button>
-                        {% endif %}
-                    </form>
+                <form method="post" action="{% url 'toggle_like' post.id %}">
+                    {% csrf_token %}
+                    {% if post.user_liked %}
+                    <button type="submit" class="btn btn-sm btn-danger">
+                        <em>❤️</em> Отменить лайк
+                    </button>
+                    {% else %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <em>❤️</em> Like
+                    </button>
+                    {% endif %}
+                </form>
                 {% endif %}
             </div>
         </footer>
@@ -66,7 +90,7 @@
             {{comment_form.content.label_tag}}
             {{comment_form.content}}
             {{comment_form.parent_id}} {#Скрыто#}
-            <button type="submit" class="btn-primary mt-2" >Добавить комментарий</button>
+            <button type="submit" class="btn-primary mt-2">Добавить комментарий</button>
         </form>
         {% else %}
         <p class="text-muted mt-4">Что бы оставить комментарий, <a href="{% url 'login' %}">войдите</a>в систему.</p>
@@ -80,36 +104,36 @@
     </section>
 
     {% if user.is_authenticated and post.author == user %}
-        <div class="mt-3 text-end">
-            <a href="{% url 'post_edit' post.id %}" class="btn btn-primary me-2">Редактировать пост</a>
-            <!-- Кнопка удаления -->
-            <!-- Модальное окно подтверждения (Bootstrap) -->
-            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal_header">
-                            <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            Вы уверенны, что хотите удалить пост "{{post.title}}"? Это действие необратимо
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                            <form method="post" action="{% url 'post_delete' post.id %}">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">Удалить</button>
-                            </form>
-                        </div>
+    <div class="mt-3 text-end">
+        <a href="{% url 'post_edit' post.id %}" class="btn btn-primary me-2">Редактировать пост</a>
+        <!-- Кнопка удаления -->
+        <!-- Модальное окно подтверждения (Bootstrap) -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal_header">
+                        <h5 class="modal-title" id="deleteModalLabel">Подтверждение удаления</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверенны, что хотите удалить пост "{{post.title}}"? Это действие необратимо
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <form method="post" action="{% url 'post_delete' post.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
                     </div>
                 </div>
-
             </div>
-            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
-                Удалить пост
-            </button>
 
         </div>
+        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            Удалить пост
+        </button>
+
+    </div>
     {% endif %}
 </div>
 <script>
@@ -127,10 +151,10 @@
                 commentForm.scrollIntoView({behavior: 'smooth'})
                 contentField.focus()
 
-                const authorName = this.closest('.card_body').querySelector('h6').innerText.trim().split(' ')[0]
+                const authorName = this.closest('.card-body').querySelector('h6').innerText.trim().split(' ')[0]
                 contentField.value = `@${authorName}, `;
             })
-        }
+        })
     })
 </script>
 {% endblock %}

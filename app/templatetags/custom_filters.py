@@ -5,6 +5,7 @@ register = template.Library()
 
 @register.filter
 def mul(value, args):
+    print(value, args)
 
     try:
         return value * args
