@@ -1,6 +1,8 @@
 {% extends 'app/home.html' %}
 
 {% block content %}
+    <!-- Переопределяем только заголовок -->
     <h2 class="mb-4">Мои посты</h2>
-    {{block.super}}
+    <!-- Остальной контент из home.html останется без изменений -->
+    {{ block.super }}
 {% endblock %}

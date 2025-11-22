@@ -211,8 +211,14 @@ def profile_edit(request):
 
 @login_required
 def my_posts(request):
-    posts = Post.objects.filter(author=request.user).select_related('author__profile').select_related('author_profile').prefetch_related('likes','comments')
-    return render(request, 'app/my_posts.html', {'posts': posts})
+    # Получаем только посты текущего пользователя
+    posts = Post.objects.filter(author=request.user).select_related('author__profile').prefetch_related('likes', 'comments')
+
+    # Передаем список posts в шаблон my_posts.html
+    context = {
+        'posts': posts,
+    }
+    return render(request, 'app/my_posts.html', context)
 
 
 @login_required
