@@ -38,6 +38,10 @@ class Post(models.Model):
 
         super().save(*args, **kwargs)
 
+    def get_comment_count(self):  # <-- Новый метод
+        """Возвращает количество комментариев для поста."""
+        return self.comments.count()
+
     class Meta:
         verbose_name = 'Post'
         verbose_name_plural = 'Posts'

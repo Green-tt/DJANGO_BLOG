@@ -46,12 +46,15 @@
                     <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-reset">
                         <div class="post-card p-3 h-100 position-relative">
                             <h3 class="post-title">{{ post.title }}</h3>
-                                                        <!-- Аватар автора -->
+                            <!-- Аватар автора -->
                             <div class="d-flex align-items-center mb-2">
                                 {% if post.author.profile.avatar %}
-                                    <img src="{{ post.author.profile.avatar.url }}" alt="Аватар {{ post.author.username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                <img src="{{ post.author.profile.avatar.url }}" alt="Аватар {{ post.author.username }}"
+                                     class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                 {% else %}
-                                    <img src="https://99px.ru/sstorage/1/2025/06/image_10506252105069244744.jpg" alt="Аватар по умолчанию" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                <img src="https://99px.ru/sstorage/1/2025/06/image_10506252105069244744.jpg"
+                                     alt="Аватар по умолчанию" class="rounded-circle me-2"
+                                     style="width: 30px; height: 30px;">
                                 {% endif %}
                                 <p class="post-meta mb-0"><strong>Автор:</strong> {{ post.author.username }}</p>
                             </div>
@@ -60,7 +63,10 @@
                                 {% if post.get_like_count %}
                                 <small class="text-muted">
                                     <em>❤️</em>
-                                    {{post.get_like_count}}
+                                    {{ post.get_like_count }} <!-- Вызов метода модели -->
+                                    &nbsp;|&nbsp; <!-- Разделитель -->
+                                    <i class="fas fa-comments text-primary"></i> <!-- Иконка комментариев -->
+                                    {{ post.get_comment_count }} <!-- Количество комментариев -->
                                 </small>
                                 {% endif %}
                             </div>
