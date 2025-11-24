@@ -24,9 +24,21 @@
                 {% endif %}
                 <p class="post-content">{{ post.content|truncatechars:150 }}</p>
             </div>
-            <p class="post-meta text-muted">
-                Автор: {{ post.author.username }} | Дата: {{ post.created_at|date:"d M Y H:i" }}
-            </p>
+
+
+            <!-- Аватар автора поста -->
+            <div class="d-flex align-items-center mb-2">
+                {% if post.author.profile.avatar %}
+                <img src="{{ post.author.profile.avatar.url }}" alt="Аватар {{ post.author.username }}"
+                     class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                {% else %}
+                <img src="https://99px.ru/sstorage/1/2025/06/image_10506252105069244744.jpg" alt="Аватар по умолчанию"
+                     class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                {% endif %}
+                <p class="post-meta text-muted mb-0">
+                    Автор: {{ post.author.username }} | Дата: {{post.created_at|date:"d M Y H:i"}}
+                </p>
+            </div>
         </header>
         <hr>
         <div class="post-content-body">
@@ -49,7 +61,7 @@
                         {{post.get_like_count}} лайк {{post.get_like_count|pluralize}}
                     </small>
                 </div>
-                 <form method="post" action="{% url 'toggle_favorite' post.id %}">
+                <form method="post" action="{% url 'toggle_favorite' post.id %}">
                     {% csrf_token %}
                     {% if post.user_liked %}
                     <button type="submit" class="btn btn-sm btn-warning" title="Удалить из избранного">
@@ -97,7 +109,7 @@
         {% endif %}
         <!-- Отображения коментариев -->
         {% for item in comment_tree %}
-            {% include 'app/comment_tree_item.html' with comment=item.comment replies=item.replies level=0 %}
+        {% include 'app/comment_tree_item.html' with comment=item.comment replies=item.replies level=0 %}
         {% empty %}
         <p class="text-muted">Пока нет комментариев</p>
         {% endfor %}

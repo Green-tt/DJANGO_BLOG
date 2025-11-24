@@ -46,19 +46,15 @@
                     <a href="{% url 'post_detail' post.id %}" class="text-decoration-none text-reset">
                         <div class="post-card p-3 h-100 position-relative">
                             <h3 class="post-title">{{ post.title }}</h3>
-                            <!-- Аватар автора-->
+                                                        <!-- Аватар автора -->
                             <div class="d-flex align-items-center mb-2">
                                 {% if post.author.profile.avatar %}
-                                <img src="{{ post.author.profile.avatar.url }}" alt="Аватар {{post.author.username}}"
-                                     class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                                    <img src="{{ post.author.profile.avatar.url }}" alt="Аватар {{ post.author.username }}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                 {% else %}
-                                <img src="https://99px.ru/sstorage/1/2025/06/image_1050625210756539585.jpg"
-                                     alt="Аватар {{post.author.username}}" class="rounded-circle me-2"
-                                     style="width: 30px; height: 30px;">
+                                    <img src="https://99px.ru/sstorage/1/2025/06/image_10506252105069244744.jpg" alt="Аватар по умолчанию" class="rounded-circle me-2" style="width: 30px; height: 30px;">
                                 {% endif %}
-                                <p class="post-content">{{ post.content|truncatechars:150 }}</p>
+                                <p class="post-meta mb-0"><strong>Автор:</strong> {{ post.author.username }}</p>
                             </div>
-                            <!-- Аватар автора-->
                             <!-- Отображения кол-во лайков в левом нижнем углу  -->
                             <div class="position-absolute bottom-0 start-0 mb-2 ms-2">
                                 {% if post.get_like_count %}
