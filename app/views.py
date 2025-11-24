@@ -52,11 +52,9 @@ def home(request):
 
     # Передаем список posts в шаблон home.html через контекст
     context = {
-        'posts': posts, # 'posts' - это имя переменной, которое будет доступно в шаблоне
+        'posts': posts,  # 'posts' - это имя переменной, которое будет доступно в шаблоне
     }
     return render(request, 'app/home.html', context)
-
-
 
 
 @login_required
@@ -68,7 +66,8 @@ def post_detail(request, post_id):
     if request.user.is_authenticated:
         post.user_liked = post.likes.filter(user=request.user).exists()
     user_favorite = post.favorite_by.filter(user=request.user).exists()
-    all_comments = Comment.objects.filter(post=post).select_related("author").prefetch_related("comment_likes").order_by("create_at")
+    all_comments = Comment.objects.filter(post=post).select_related("author").prefetch_related(
+        "comment_likes").order_by("create_at")
     comment_tree = build_comment_tree(all_comments)
 
     comment_form = CommentForm(post_id=post_id)
@@ -212,7 +211,8 @@ def profile_edit(request):
 @login_required
 def my_posts(request):
     # Получаем только посты текущего пользователя
-    posts = Post.objects.filter(author=request.user).select_related('author__profile').prefetch_related('likes', 'comments')
+    posts = Post.objects.filter(author=request.user).select_related('author__profile').prefetch_related('likes',
+                                                                                                        'comments')
 
     # Передаем список posts в шаблон my_posts.html
     context = {
@@ -223,7 +223,8 @@ def my_posts(request):
 
 @login_required
 def favorites(request):
-    favorite_entries = Favorite.objects.filter(user=request.user).select_related('post__author__profile').prefeth_related('post__likes', 'post__comments')
+    favorite_entries = Favorite.objects.filter(user=request.user).select_related(
+        'post__author__profile').prefeth_related('post__likes', 'post__comments')
     posts = [entry.post for entry in favorite_entries]
     return render(request, 'app/favorites.html', {'posts': posts})
 
@@ -239,8 +240,6 @@ def toggle_favorite(request, post_id):
 
     action = "добавлен в избранное"
     if not created:
-
-
         favorite_obj.delete()
         action = "удален из"
     messages.info(request, f'Пост"{post.title} {action}"')
@@ -250,7 +249,8 @@ def toggle_favorite(request, post_id):
 
 @login_required
 def messages_list(request):
-    receives_messages = Message.objects.filter(recipient=request.user).select_related('sender__profile').order_by('-timestamp')
+    receives_messages = Message.objects.filter(recipient=request.user).select_related('sender__profile').order_by(
+        '-timestamp')
     unread_count = receives_messages.filter(is_read=False).count()
     return render(request, 'app/messages_list.html', {
         'messages': receives_messages,
@@ -264,7 +264,7 @@ def message_detail(request, message_id):
     if not message.is_read:
         message.is_read = True
         message.save()
-    return render(request, 'app/message_detail.html',{
+    return render(request, 'app/message_detail.html', {
         'message': message
     })
 
@@ -281,9 +281,9 @@ def send_message(request, recipient_id):
             message.save()
             messages.success(request, f'Сообщения для {recipient.username} отправлено')
             return redirect('profile_view', username=recipient.username)
-        else:
-            form = MessageForm()
-        return render(request, 'app/send_message.html', {
-            'form': form,
-            'recipient': recipient,
-        })
+    else:
+        form = MessageForm()
+    return render(request, 'app/send_message.html', {
+        'form': form,
+        'recipient': recipient,
+    })
