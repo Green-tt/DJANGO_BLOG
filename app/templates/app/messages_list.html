@@ -1,0 +1,29 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Личные сообщения</h2>
+
+    {% if messages %}
+    {% for message in messages %}
+    <a href="{% url 'message_detail' message.if %}"
+       class="list-group-item list-group-item-action {% if not messages.is_read %} list-group-item-warning {% endif %}">
+        <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{message.subject|default:"Без темы"}}</h5>
+                    <small>{{message.timestamp|date:"d M Y H:i"}}</small>
+        </div>
+        <p class="mb-1">От: {{message.sender.username}}</p>
+        {% if not message.is_read %}
+            <span class="badge bg-warning">Новое</span>
+        {% endif %}
+
+
+    </a>
+
+    {% else %}
+    <p class="text-muted">У вас нет личных сообщений</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

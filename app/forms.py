@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Post, Comment, UserProfile
+from .models import Post, Comment, UserProfile, Message
 
 
 class UserRegisterForm(UserCreationForm):
@@ -98,4 +98,19 @@ class UserProfileForm(forms.ModelForm):
             user.save()
             user_profile.save()
         return user_profile
+
+
+# Форма для личного сообщения
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['subject', 'content']
+        widgets = {
+            'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Тема сообщнеия'}),
+            'content': forms.TextInput(attrs={'class': 'form-control', 'row': 5, 'placeholder': 'Тема сообщнеия...'})
+        }
+        labels = {
+            'subject': 'Тема (опционально)',
+            'content': 'Сообщения',
+        }
 

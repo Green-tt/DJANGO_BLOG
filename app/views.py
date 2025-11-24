@@ -5,8 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .forms import UserRegisterForm, UserLoginForm, PostForm, CommentForm, UserProfileForm
-from .models import UserProfile, Post, Like, Comment, Favorite
+from .forms import UserRegisterForm, UserLoginForm, PostForm, CommentForm, UserProfileForm, MessageForm
+from .models import UserProfile, Post, Like, Comment, Favorite, Message
 
 
 # Create your views here.
@@ -248,4 +248,42 @@ def toggle_favorite(request, post_id):
     return HttpResponseRedirect(next_url)
 
 
+@login_required
+def messages_list(request):
+    receives_messages = Message.objects.filter(recipient=request.user).select_related('sender__profile').order_by('-timestamp')
+    unread_count = receives_messages.filter(is_read=False).count()
+    return render(request, 'app/messages_list.html', {
+        'messages': receives_messages,
+        'unread_count': unread_count,
+    })
 
+
+@login_required
+def message_detail(request, message_id):
+    message = get_object_or_404(Message, id=message_id, recipient=request.user)
+    if not message.is_read:
+        message.is_read = True
+        message.save()
+    return render(request, 'app/message_detail.html',{
+        'message': message
+    })
+
+
+@login_required
+def send_message(request, recipient_id):
+    recipient = get_object_or_404(User, id=recipient_id)
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user
+            message.recipient = recipient
+            message.save()
+            messages.success(request, f'Сообщения для {recipient.username} отправлено')
+            return redirect('profile_view', username=recipient.username)
+        else:
+            form = MessageForm()
+        return render(request, 'app/send_message.html', {
+            'form': form,
+            'recipient': recipient,
+        })
