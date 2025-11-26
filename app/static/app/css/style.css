@@ -182,24 +182,4 @@ h2 {
 }
 
 
-    .message-bubble.sent {
-        text-align: right;
-        margin-left: 60%;
-    }
-    .message-bubble.received {
-        text-align: left;
-        margin-right: 25%;
-    }
-    .message-content {
-        display: inline-block;
-        padding: 8px 12px;
-        border-radius: 10px;
-        background-color: #e9ecef;
-        margin-bottom: 10px;
-    }
-    .sent .message-content {
-        background-color: #d1ecf1;
-    }
-    .received .message-content {
-        background-color: #f8f9fa;
-    }
+
