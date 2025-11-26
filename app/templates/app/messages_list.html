@@ -57,8 +57,7 @@
                              alt="Аватар {{ message.sender.username }}"
                              class="rounded-circle me-2" style="width: 20px; height: 20px;">
                         {% endif %}
-                        <small class="text-muted">{{ message.sender.username }} - {{ message.timestamp|date:"d M Y H:i"
-                            }}</small>
+                        <small class="text-muted">{{ message.sender.username }} - {{ message.timestamp|date:"d M Y H:i" }}</small>
                     </div>
                     <div class="message-content">
                         {{ message.content }}

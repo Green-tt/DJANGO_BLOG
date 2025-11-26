@@ -181,7 +181,7 @@ h2 {
     height: 170px !important;
 }
 
-<style>
+
     .message-bubble.sent {
         text-align: right;
         margin-left: 60%;
@@ -203,4 +203,3 @@ h2 {
     .received .message-content {
         background-color: #f8f9fa;
     }
-</style>
