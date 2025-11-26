@@ -132,6 +132,7 @@ class Favorite(models.Model):
 
 # Модель для личных сообщений
 class Message(models.Model):
+    objects = None
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='send_messages')
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_messages')
     subject = models.CharField(max_length=200, blank=True)

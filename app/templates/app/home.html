@@ -62,10 +62,11 @@
                             <div class="position-absolute bottom-0 start-0 mb-2 ms-2">
                                 {% if post.get_like_count %}
                                 <small class="text-muted">
-                                    <em>❤️</em>
+                                      ❤️
                                     {{ post.get_like_count }} <!-- Вызов метода модели -->
                                     &nbsp;|&nbsp; <!-- Разделитель -->
-                                    <i class="fas fa-comments text-primary"></i> <!-- Иконка комментариев -->
+<!--                                    <i class="fas fa-comments text-primary"></i> &lt;!&ndash; Иконка комментариев &ndash;&gt;-->
+                                    🗨️ <!-- Иконка комментариев -->
                                     {{ post.get_comment_count }} <!-- Количество комментариев -->
                                 </small>
                                 {% endif %}

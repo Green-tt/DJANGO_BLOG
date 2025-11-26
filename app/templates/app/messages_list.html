@@ -4,26 +4,90 @@
 <div class="container mt-4">
     <h2>Личные сообщения</h2>
 
-    {% if messages %}
-    {% for message in messages %}
-    <a href="{% url 'message_detail' message.if %}"
-       class="list-group-item list-group-item-action {% if not messages.is_read %} list-group-item-warning {% endif %}">
-        <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{message.subject|default:"Без темы"}}</h5>
-                    <small>{{message.timestamp|date:"d M Y H:i"}}</small>
+    <div class="row">
+        <!-- Левая колонка - список переписок -->
+        <div class="col-md-4 border-end">
+            <h5>Переписки</h5>
+            {% if contacts_with_unread %}
+            <div class="list-group">
+                {% for item in contacts_with_unread %}
+                {% with contact=item.contact unread_count=item.unread_count %}
+                <a href="{% url 'messages_list' recipient_id=contact.id %}"
+                   class="list-group-item list-group-item-action
+                       {% if contact == selected_recipient %}active{% endif %} {% if unread_count > 0 %}list-group-item-warning{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            {% if contact.profile.avatar %}
+                            <img src="{{ contact.profile.avatar.url }}" alt="Аватар {{ contact.username }}"
+                                 class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                            {% else %}
+                            <img src="https://99px.ru/sstorage/1/2025/06/image_10506252105069244744.jpg"
+                                 alt="Аватар {{ contact.username }}"
+                                 class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                            {% endif %}
+                            <span>{{ contact.username }}</span>
+                        </div>
+                        {% if unread_count > 0 %}
+                        <span class="badge bg-danger">{{ unread_count }}</span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endwith %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted">У вас пока нет переписок.</p>
+            {% endif %}
         </div>
-        <p class="mb-1">От: {{message.sender.username}}</p>
-        {% if not message.is_read %}
-            <span class="badge bg-warning">Новое</span>
-        {% endif %}
 
-
-    </a>
-
-    {% else %}
-    <p class="text-muted">У вас нет личных сообщений</p>
-    {% endif %}
-
+        <!-- Правая колонка - сообщения и форма -->
+        <div class="col-md-8">
+            {% if selected_recipient %}
+            <h5>Переписка с {{selected_recipient.username}}</h5>
+            <div id="messages-container" class="border rounded p-3 mb-3" style="height: 400px; overflow-y: auto;">
+                {% if selected_conversation %}
+                {% for message in selected_conversation %}
+                <div class="message-bubble {% if message.sender == user %}sent{% else %}received{% endif %}">
+                    <div class="d-flex align-items-center mb-1">
+                        {% if message.sender.profile.avatar %}
+                        <img src="{{ message.sender.profile.avatar.url }}" alt="Аватар {{ message.sender.username }}"
+                             class="rounded-circle me-2" style="width: 20px; height: 20px;">
+                        {% else %}
+                        <img src="https://99px.ru/sstorage/1/2025/06/image_10506252105069244744.jpg"
+                             alt="Аватар {{ message.sender.username }}"
+                             class="rounded-circle me-2" style="width: 20px; height: 20px;">
+                        {% endif %}
+                        <small class="text-muted">{{ message.sender.username }} - {{ message.timestamp|date:"d M Y H:i"
+                            }}</small>
+                    </div>
+                    <div class="message-content">
+                        {{ message.content }}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-muted">Нет сообщений в этой переписке.</p>
+                {% endif %}
+                <!-- Форма отправки сообщения -->
+                {% if selected_recipient != user %}
+                <form method="post" action="{% url 'send_message' selected_recipient.id %}" id="message-form">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <textarea name="content" class="form-control" placeholder="Введите сообщение..."
+                                  required></textarea>
+                        <button class="btn btn-primary" type="submit">Отправить</button>
+                    </div>
+                    <input type="hidden" name="subject" value="Переписка с {{ selected_recipient.username }}">
+                </form>
+                {% else %}
+                <p class="text-muted">Нельзя отправить сообщение себе.</p>
+                {% endif %}
+                {% else %}
+                <p class="text-muted">Выберите переписку слева.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

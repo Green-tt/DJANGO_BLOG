@@ -17,7 +17,7 @@ urlpatterns = [
     path('post/<int:post_id>/toggle_favorite/', views.toggle_favorite, name='toggle_favorite'),
 
     path('messages/', views.messages_list, name='messages_list'),
-    path('messages/<int:message_id>/', views.message_detail, name='messages_detail'),
+    path('messages/<int:recipient_id>/', views.messages_list, name='messages_list'),
     path('messages/send/<int:recipient_id>', views.send_message, name='send_message'),
 
     path('profile', views.profile_edit, name='profile_edit'),

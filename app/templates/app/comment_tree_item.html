@@ -18,8 +18,7 @@
             {% endif %}
             <div class="flex-grow-1">
                 <h6 class="card-subtitle mb-1 text-muted">
-                    {{ comment.author.username }} <small class="text-muted">{{ comment.created_at|date:"d M Y H:i"
-                    }}</small>
+                    {{ comment.author.username }} <small class="text-muted">{{comment.create_at|date:"d M Y H:i"}}</small>
                 </h6>
                 <p class="card-text">{{ comment.content }}</p>
                 {% if user.is_authenticated %}
