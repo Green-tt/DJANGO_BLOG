@@ -1,0 +1,44 @@
+{% extends 'app/shop/base.html' %}
+
+{% block shop_content %}
+<!-- навигация по категориям-->
+<div class="row mb-4">
+    <div class="col">
+        <h5>Категории</h5>
+        <ul class="list-unstyled" style="display: flex; gap: 15px">
+            {% for cat in categories %}
+            <li><a href="{% url 'shop_category' cat.id %}">{{cat.name}}</a></li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</div>
+
+<!-- список товаров -->
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 md-4">
+        <div class="card h-100">
+            {% if product.image %}
+            <img src="{{product.image.url}}" class="card-img-top" alt="{{product.name}}">
+            {% else %}
+            <img src="" class="card-img-top" alt="Нет изображения">
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{product.name}}</h5>
+                <p class="card-text">{{product.description|truncatechars:100}}</p>
+                <p class="card-text mt-auto"><strong>{{product.description|truncatechars:100}}</strong></p>
+                <a href="{% url 'shop_product_detail' product.id %}"
+                   class="btn btn-primary">Поподробнее</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col">
+        <p class="text-muted">Товаров пока нет</p>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock %}

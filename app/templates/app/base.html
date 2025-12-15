@@ -13,6 +13,7 @@
 <nav class="navbar navbar-expend-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="{% url 'home' %}">Мой сайт</a>
+        <a class="navbar-brand" href="{% url 'shop_home' %}">Магазин</a>
         <div class="navbar-nav ms-auto">
             {% if user.is_authenticated %}
             <div class="nav-item dropdown">

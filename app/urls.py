@@ -22,4 +22,10 @@ urlpatterns = [
 
     path('profile', views.profile_edit, name='profile_edit'),
     path('profile/<str:username>/', views.profile_view, name='profile_view'),
+    # Магазин
+
+    path('shop/', views.shop_home, name="shop_home"),
+    path('shop/category/<int:category_id>/', views.shop_category, name="shop_category"),
+    path('shop/product/<int:product_id>/', views.shop_product_detail, name="shop_product_detail")
+
 ]

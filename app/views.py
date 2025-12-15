@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db.models import Q
 from .forms import UserRegisterForm, UserLoginForm, PostForm, CommentForm, UserProfileForm, MessageForm
-from .models import UserProfile, Post, Like, Comment, Favorite, Message
+from .models import UserProfile, Post, Like, Comment, Favorite, Message, Product, Category
 
 
 # Create your views here.
@@ -247,6 +247,7 @@ def toggle_favorite(request, post_id):
     next_url = request.META.get("HTTP_REFERER", reverse('home'))
     return HttpResponseRedirect(next_url)
 
+
 @login_required
 def messages_list(request, recipient_id=None):
     # Получаем список всех собеседников (людей, с которыми была переписка)
@@ -258,14 +259,15 @@ def messages_list(request, recipient_id=None):
     contacts_with_unread = []
     for contact in contacts:
         unread_count = Message.objects.filter(
-            sender=contact,      # Сообщение отправлено *от* этого контакта
-            recipient=request.user, # ... и адресовано *текущему пользователю*
-            is_read=False        # ... и *ещё не прочитано*
+            sender=contact,  # Сообщение отправлено *от* этого контакта
+            recipient=request.user,  # ... и адресовано *текущему пользователю*
+            is_read=False  # ... и *ещё не прочитано*
         ).count()
         contacts_with_unread.append({
             'contact': contact,
             'unread_count': unread_count
         })
+
     # Сортировка контактов по времени последнего сообщения
     def get_last_message_time(contact):
         last_msg = Message.objects.filter(
@@ -273,14 +275,17 @@ def messages_list(request, recipient_id=None):
             (Q(sender=contact) & Q(recipient=request.user))
         ).order_by('-timestamp').first()
         return last_msg.timestamp if last_msg else None
-    sorted_contacts_with_unread = sorted(contacts_with_unread, key=lambda x: get_last_message_time(x['contact']), reverse=True)
+
+    sorted_contacts_with_unread = sorted(contacts_with_unread, key=lambda x: get_last_message_time(x['contact']),
+                                         reverse=True)
     selected_conversation = None
     selected_recipient = None
     if recipient_id:
         selected_recipient = get_object_or_404(User, id=recipient_id)
         if selected_recipient.id in all_contact_ids:
             # Отмечаем сообщения от selected_recipient как прочитанные
-            Message.objects.filter(recipient=request.user, sender=selected_recipient, is_read=False).update(is_read=True)
+            Message.objects.filter(recipient=request.user, sender=selected_recipient, is_read=False).update(
+                is_read=True)
             selected_conversation = Message.objects.filter(
                 (Q(sender=request.user) & Q(recipient=selected_recipient)) |
                 (Q(sender=selected_recipient) & Q(recipient=request.user))
@@ -293,6 +298,7 @@ def messages_list(request, recipient_id=None):
         'selected_recipient': selected_recipient,
         'unread_count': unread_count_total,
     })
+
 
 @login_required
 def send_message(request, recipient_id):
@@ -313,4 +319,34 @@ def send_message(request, recipient_id):
 
     if request.method == 'GET':
         return redirect('messages_list', recipient_id=recipient.id)
-    return render(request, 'app/send_message.html', {'form': form, 'recipient': recipient})
+    return render(request, 'app/send_message.html', {
+        'form': form,
+        'recipient': recipient
+    })
+
+
+def shop_home(request):
+    product = Product.objects.select_related("category").all()
+    categories = Category.objects.all()
+    return render(request, 'app/shop/home.html', {
+        "products": product,
+        "categories": categories
+    })
+
+
+def shop_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    products = Product.objects.filter(category=category).select_related("category")
+    categories = Category.objects.all()
+    return render(request, "app/shop/category.html", {
+        "products": products,
+        "category": category,
+        "categories": categories,
+    })
+
+
+def shop_product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    return render(request, "app/shop/product_detail.html", {
+        "product": product
+    })
